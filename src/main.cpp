@@ -2,6 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "Renderer/ShaderProgram.h"
+
+
 int g_windowSizeX{ 640 };
 int g_windowSizeY{ 480 };
 
@@ -9,14 +12,14 @@ GLfloat point[] =
 {
     0.0f,   0.5f, 0.0f,
     0.5f,  -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
+   -0.5f,  -0.5f, 0.0f
 };
 
 GLfloat colors[] =
 {
     1.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 0.0f,
-    1.0f, 1.0f, 1.0f
+    0.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 1.0f
 };
 
 const char* vertex_shader =
@@ -110,36 +113,49 @@ int main(void)
 	
 	glClearColor(1, 1, 0, 1);
 
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertex_shader, nullptr);
-    glCompileShader(vs);
-    //проверка компил€ции
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
-    if (!success)
+    std::string vertexShader(vertex_shader);
+    std::string fragmentShader(fragment_shader);
+    Renderer::ShaderProgram shaderProgram(vertexShader, fragmentShader);
+    if (shaderProgram.isCompiled() == false)
     {
-        glGetShaderInfoLog(vs, 512, NULL, infolog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infolog << std::endl;
+        std::cout << "Can't create shader program, abort.\n";
+        return 1;
     }
 
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragment_shader, nullptr);
-    glCompileShader(fs);
-    //проверка компил€ции
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vs, 512, NULL, infolog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infolog << std::endl;
-    }
+    //GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    //glShaderSource(vs, 1, &vertex_shader, nullptr);
+    //glCompileShader(vs);
+    ////проверка компил€ции
+    //glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
+    //if (!success)
+    //{
+    //    glGetShaderInfoLog(vs, 512, NULL, infolog);
+    //    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infolog << std::endl;
+    //}
 
-    GLuint shader_program = glCreateProgram();
+    //GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+    //glShaderSource(fs, 1, &fragment_shader, nullptr);
+    //glCompileShader(fs);
+    ////проверка компил€ции
+    //glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
+    //if (!success)
+    //{
+    //    glGetShaderInfoLog(vs, 512, NULL, infolog);
+    //    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infolog << std::endl;
+    //}
 
-    glAttachShader(shader_program, vs);
-    glAttachShader(shader_program, fs);
-    glLinkProgram(shader_program);
+    //// создание программы шейдера
+    //GLuint shader_program = glCreateProgram();
 
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    //// присоединение шейдеров к программе шейдера
+    //glAttachShader(shader_program, vs);
+    //glAttachShader(shader_program, fs);
+    //// линковка программы шейдера
+    //glLinkProgram(shader_program);
+
+    //// объекты шейдера больше не нужны, удал€ем
+    //glDeleteShader(vs);
+    //glDeleteShader(fs);
 
     GLuint points_vbo = 0;
     glGenBuffers(1, &points_vbo);
@@ -170,7 +186,8 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_program);
+        shaderProgram.Use();
+        //glUseProgram(shader_program);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
