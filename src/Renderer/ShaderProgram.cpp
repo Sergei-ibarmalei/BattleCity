@@ -44,6 +44,9 @@ namespace Renderer
 		glDeleteShader(fragmentShaderID);
 	}
 
+
+
+
 	bool ShaderProgram::createShader(const std::string& source,
 		const GLenum shaderType,
 		GLuint& shaderID)
