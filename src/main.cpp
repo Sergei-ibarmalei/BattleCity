@@ -122,13 +122,19 @@ int main(int argc, char* argv[])
                 std::string{ "res/shaders/vertex.txt" },
                 std::string{ "res/shaders/fragment.txt" });*/
         auto pDefaultShaderProgram =
-            resourceManager.loadShaders("DefaultShader", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
+            resourceManager.loadShaders("DefaultShader", 
+                                        "res/shaders/vertex.txt", 
+                                        "res/shaders/fragment.txt");
         if (!pDefaultShaderProgram)
         {
             std::cerr << "Can't create shader program: DefaultShader" <<
                 std::endl;
             return 1;
         }
+
+        //загружаем текстуры
+        resourceManager.loadTexture("DefaultTexture", 
+                                    "res/textures/map_16x16.png");
 
 
 
